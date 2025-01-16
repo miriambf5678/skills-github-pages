@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mapa Conceptual</title>
+  <style>
+    body {
+      font-family: Calibri, sans-serif;
+      font-size: 24px;
+      background-color: #004EB3;
+      color: white;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+    h1 {
+      font-size: 32px;
+      font-weight: bold;
+    }
+    h2 {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+    #container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    #areas {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-width: 1200px;
+      margin-bottom: 20px;
+    }
+    .area {
+      border: 2px dashed white;
+      padding: 20px;
+      min-height: 150px;
+      border-radius: 10px;
+      font-size: 26px;
+      font-weight: bold;
+    }
+    #branches-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+      padding-bottom: 50px;
+    }
+    .branch {
+      background-color: white;
+      color: #004EB3;
+      padding: 10px 15px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: grab;
+      text-align: center;
+    }
+    .branch.dragging {
+      opacity: 0.5;
+    }
+    .hidden {
+      display: none;
+    }
+    #message {
+      display: none;
+      margin-top: 20px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    /* Responsiu: Ajust del tipus de lletra */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 24px; /* Redueix el títol en pantalles petites */
+      }
+      h2 {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <h1>RECURSOS DIGITALS DE LA BIBLIOTECA I UTILITAT DE LA INTEL·LIGÈNCIA ARTIFICIAL EN LA CERCA BIBLIOGRÀFICA</h1>
+    <h2>Completar el mapa conceptual</h2>
+    <div id="areas">
+      <div class="area" data-area="New England Journal of Medicine">New England Journal of Medicine</div>
+      <div class="area" data-area="UptoDate">UptoDate</div>
+      <div class="area" data-area="Clinical Key">Clinical Key</div>
+    </div>
+    <div id="branches-container">
+      <!-- Branches -->
+    </div>
+    <div id="message">Felicitats, tutor/a! Has completat correctament el mapa conceptual!</div>
+  </div>
+
+  <script>
+    const branchesData = [
+      "Multimèdia", "Stats, STAT!", "NEJM AI Grand Rounds", "Rotation Prep", "Recursos interactius per a Residents",
+      "Resums d’evidència", "Calculadores mèdiques", "Interaccions entre medicaments",
+      "Perspectiva clínica", "Guies Fisterra i Tractats EMC", "Fitxes de medicaments", 
+      "Calculadores mèdiques", "Guies clíniques i Educació per al pacient"
+    ];
+    const correctAreas = {
+      "New England Journal of Medicine": ["Multimèdia", "Stats, STAT!", "NEJM AI Grand Rounds", "Rotation Prep", "Recursos interactius per a Residents"],
+      "UptoDate": ["Resums d’evidència", "Calculadores mèdiques", "Interaccions entre medicaments"],
+      "Clinical Key": ["Perspectiva clínica", "Guies Fisterra i Tractats EMC", "Fitxes de medicaments", "Calculadores mèdiques", "Guies clíniques i Educació per al pacient"]
+    };
+
+    const branchesContainer = document.getElementById("branches-container");
+    const areas = document.querySelectorAll(".area");
+    const message = document.getElementById("message");
+
+    let correctCount = 0;
+
+    // Shuffle branches
+    const shuffledBranches = branchesData.sort(() => Math.random() - 0.5);
+    shuffledBranches.forEach(branch => {
+      const branchEl = document.createElement("div");
+      branchEl.classList.add("branch");
+      branchEl.textContent = branch;
+      branchEl.draggable = true;
+      branchesContainer.appendChild(branchEl);
+
+      branchEl.addEventListener("dragstart", () => {
+        branchEl.classList.add("dragging");
+      });
+
+      branchEl.addEventListener("dragend", () => {
+        branchEl.classList.remove("dragging");
+      });
+    });
+
+    areas.forEach(area => {
+      area.addEventListener("dragover", e => {
+        e.preventDefault();
+      });
+
+      area.addEventListener("drop", e => {
+        e.preventDefault();
+        const dragging = document.querySelector(".dragging");
+        if (!dragging) return;
+
+        const areaName = area.getAttribute("data-area");
+        const branchName = dragging.textContent;
+
+        if (correctAreas[areaName].includes(branchName)) {
+          area.appendChild(dragging);
+          dragging.draggable = false; // Prevent further dragging once placed correctly
+          dragging.style.cursor = "default";
+          correctCount++;
+          if (correctCount === branchesData.length) {
+            message.style.display = "block";
+          }
+        } else {
+          alert("Aquesta branca no pertany a aquesta àrea. Torna-ho a provar!");
+        }
+      });
+    });
+  </script>
+</body>
+</html>
